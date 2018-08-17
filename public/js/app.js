@@ -12359,7 +12359,6 @@ var login = function login(credentials) {
     var email = credentials.email,
         password = credentials.password;
 
-    debugger;
     axios.post('/api/auth/login', { email: email, password: password }).then(function (response) {
       res(response.data);
     }).catch(function (err) {
@@ -12402,7 +12401,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_vuetify__ = __webpack_require__(61);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_5_vuetify___default = __webpack_require__.n(__WEBPACK_IMPORTED_MODULE_5_vuetify__);
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_6__store__ = __webpack_require__(62);
-
+/* harmony import */ var __WEBPACK_IMPORTED_MODULE_7__helpers_general__ = __webpack_require__(65);
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
@@ -12410,6 +12409,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
  */
 
 __webpack_require__(16);
+
 
 
 
@@ -12430,20 +12430,7 @@ var router = new __WEBPACK_IMPORTED_MODULE_1_vue_router__["a" /* default */]({
   mode: 'history'
 });
 
-router.beforeEach(function (to, from, next) {
-  var requiresAuth = to.matched.some(function (record) {
-    return record.meta.requiresAuth;
-  });
-  var currentUser = store.state.currentUser;
-
-  if (requiresAuth && !currentUser) {
-    next('/login');
-  } else if (to.path == '/login' && currentUser) {
-    next('/');
-  } else {
-    next();
-  }
-});
+Object(__WEBPACK_IMPORTED_MODULE_7__helpers_general__["a" /* initialize */])(store, router);
 
 var app = new __WEBPACK_IMPORTED_MODULE_0_vue___default.a({
   el: '#app',
@@ -35209,7 +35196,7 @@ exports = module.exports = __webpack_require__(3)(false);
 
 
 // module
-exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
+exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n", ""]);
 
 // exports
 
@@ -35221,6 +35208,14 @@ exports.push([module.i, "\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\
 "use strict";
 Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 /* harmony import */ var __WEBPACK_IMPORTED_MODULE_0__helpers_auth__ = __webpack_require__(13);
+//
+//
+//
+//
+//
+//
+//
+//
 //
 //
 //
@@ -35276,7 +35271,7 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       passwordRules: [function (v) {
         return !!v || 'Password is required';
       }, function (v) {
-        return v.length > 6 || 'Name must be less than 6 characters';
+        return v.length >= 6 || 'Name must be less than 6 characters';
       }],
       email: '',
       emailRules: [function (v) {
@@ -35299,6 +35294,11 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
       }).catch(function (error) {
         _this.$store.commit('loginFailed', { error: error });
       });
+    }
+  },
+  computed: {
+    authError: function authError() {
+      return this.$store.getters.authError;
     }
   }
 });
@@ -35413,6 +35413,12 @@ var render = function() {
                   ])
                 ],
                 1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-alert",
+                { attrs: { value: !!_vm.authError, type: "error" } },
+                [_vm._v("\n        " + _vm._s(_vm.authError) + "\n      ")]
               )
             ],
             1
@@ -35531,6 +35537,23 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'main-app',
@@ -35542,6 +35565,17 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
     return {
       drawer: null
     };
+  },
+  methods: {
+    logout: function logout() {
+      this.$store.commit('logout');
+      this.$router.push('/login');
+    }
+  },
+  computed: {
+    currentUser: function currentUser() {
+      return this.$store.getters.currentUser;
+    }
   },
   props: {
     source: String
@@ -35560,85 +35594,135 @@ var render = function() {
     "v-app",
     { attrs: { id: "main" } },
     [
-      _c(
-        "v-navigation-drawer",
-        {
-          attrs: { app: "", fixed: "" },
-          model: {
-            value: _vm.drawer,
-            callback: function($$v) {
-              _vm.drawer = $$v
-            },
-            expression: "drawer"
-          }
-        },
-        [
-          _c(
-            "v-list",
-            { attrs: { dense: "" } },
-            [
-              _c(
-                "v-list-tile",
-                { on: { click: function($event) {} } },
-                [
-                  _c("v-list-tile-action", [_c("v-icon", [_vm._v("home")])], 1),
-                  _vm._v(" "),
-                  _c(
-                    "v-list-tile-content",
-                    [_c("v-list-tile-title", [_vm._v("Home")])],
-                    1
-                  )
-                ],
-                1
-              ),
-              _vm._v(" "),
-              _c(
-                "v-list-tile",
-                { on: { click: function($event) {} } },
-                [
-                  _c(
-                    "v-list-tile-action",
-                    [_c("v-icon", [_vm._v("contact_mail")])],
-                    1
-                  ),
-                  _vm._v(" "),
-                  _c(
-                    "v-list-tile-content",
-                    [_c("v-list-tile-title", [_vm._v("Contact")])],
-                    1
-                  )
-                ],
-                1
-              )
-            ],
-            1
-          )
-        ],
-        1
-      ),
+      _vm.currentUser
+        ? [
+            _c(
+              "v-navigation-drawer",
+              {
+                attrs: { app: "", fixed: "" },
+                model: {
+                  value: _vm.drawer,
+                  callback: function($$v) {
+                    _vm.drawer = $$v
+                  },
+                  expression: "drawer"
+                }
+              },
+              [
+                _c(
+                  "v-list",
+                  { attrs: { dense: "" } },
+                  [
+                    _c(
+                      "v-list-tile",
+                      { on: { click: function($event) {} } },
+                      [
+                        _c(
+                          "v-list-tile-action",
+                          [_c("v-icon", [_vm._v("home")])],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-list-tile-content",
+                          [_c("v-list-tile-title", [_vm._v("Home")])],
+                          1
+                        )
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-list-tile",
+                      { on: { click: function($event) {} } },
+                      [
+                        _c(
+                          "v-list-tile-action",
+                          [_c("v-icon", [_vm._v("contact_mail")])],
+                          1
+                        ),
+                        _vm._v(" "),
+                        _c(
+                          "v-list-tile-content",
+                          [_c("v-list-tile-title", [_vm._v("Contact")])],
+                          1
+                        )
+                      ],
+                      1
+                    )
+                  ],
+                  1
+                )
+              ],
+              1
+            )
+          ]
+        : _vm._e(),
       _vm._v(" "),
       _c(
         "v-toolbar",
         { attrs: { app: "", dark: "", fixed: "" } },
         [
-          _c("v-toolbar-side-icon", {
-            on: {
-              click: function($event) {
-                $event.stopPropagation()
-                _vm.drawer = !_vm.drawer
-              }
-            }
-          }),
+          _vm.currentUser
+            ? _c("v-toolbar-side-icon", {
+                on: {
+                  click: function($event) {
+                    $event.stopPropagation()
+                    _vm.drawer = !_vm.drawer
+                  }
+                }
+              })
+            : _vm._e(),
           _vm._v(" "),
-          _c("v-toolbar-title", [_vm._v("Title")]),
+          _c("v-toolbar-title", [_vm._v("PotatoVue")]),
           _vm._v(" "),
           _c("v-spacer"),
           _vm._v(" "),
           _c(
             "v-toolbar-items",
             { staticClass: "hidden-sm-and-down" },
-            [_c("v-btn", { attrs: { flat: "" } }, [_vm._v("Logout")])],
-            1
+            [
+              !_vm.currentUser
+                ? [
+                    _c(
+                      "v-btn",
+                      { attrs: { flat: "" } },
+                      [
+                        _c("router-link", { attrs: { to: "/login" } }, [
+                          _vm._v("Login")
+                        ])
+                      ],
+                      1
+                    ),
+                    _vm._v(" "),
+                    _c(
+                      "v-btn",
+                      { attrs: { flat: "" } },
+                      [
+                        _c("router-link", { attrs: { to: "/register" } }, [
+                          _vm._v("Register")
+                        ])
+                      ],
+                      1
+                    )
+                  ]
+                : [
+                    _c(
+                      "v-btn",
+                      {
+                        attrs: { flat: "" },
+                        on: {
+                          click: function($event) {
+                            $event.preventDefault()
+                            return _vm.logout($event)
+                          }
+                        }
+                      },
+                      [_vm._v("Logout")]
+                    )
+                  ]
+            ],
+            2
           )
         ],
         1
@@ -35648,7 +35732,7 @@ var render = function() {
       _vm._v(" "),
       _c("v-footer", { attrs: { app: "" } })
     ],
-    1
+    2
   )
 }
 var staticRenderFns = []
@@ -55815,6 +55899,9 @@ var user = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_auth__["a" /* getLocalUse
     },
     currentUser: function currentUser(state) {
       return state.currentUser;
+    },
+    authError: function authError(state) {
+      return state.auth_error;
     }
   },
   mutations: {
@@ -55852,6 +55939,38 @@ var user = Object(__WEBPACK_IMPORTED_MODULE_0__helpers_auth__["a" /* getLocalUse
 /***/ (function(module, exports) {
 
 // removed by extract-text-webpack-plugin
+
+/***/ }),
+/* 64 */,
+/* 65 */
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (immutable) */ __webpack_exports__["a"] = initialize;
+
+function initialize(store, router) {
+  router.beforeEach(function (to, from, next) {
+    var requiresAuth = to.matched.some(function (record) {
+      return record.meta.requiresAuth;
+    });
+    var currentUser = store.state.currentUser;
+
+    if (requiresAuth && !currentUser) {
+      next('/login');
+    } else if (to.path == '/login' && currentUser) {
+      next('/');
+    } else {
+      next();
+    }
+  });
+
+  axios.interceptors.response.use(null, function (error) {
+    if (error.response.status === 401) {
+      store.commit('logout');
+      router.push('/login');
+    }
+  });
+}
 
 /***/ })
 /******/ ]);

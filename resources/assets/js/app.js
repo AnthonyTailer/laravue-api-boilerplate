@@ -1,9 +1,9 @@
-
 /**
  * First we will load all of this project's JavaScript dependencies which
  * includes Vue and other libraries. It is a great starting point when
  * building robust, powerful web applications using Vue and Laravel.
  */
+
 
 require('./bootstrap');
 
@@ -14,6 +14,7 @@ import  { routes } from './routes'
 import MainApp from './components/MainApp.vue'
 import Vuetify from 'vuetify'
 import StoreData from './store'
+import { initialize } from "./helpers/general";
 
 Vue.use(Vuetify)
 Vue.use(VueRouter)
@@ -26,19 +27,7 @@ const router = new VueRouter({
   mode: 'history'
 })
 
-router.beforeEach((to, from, next) => {
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth )
-  const currentUser = store.state.currentUser
-
-  if (requiresAuth && !currentUser) {
-    next('/login')
-  } else if (to.path == '/login' && currentUser ) {
-    next('/')
-  }
-  else {
-    next()
-  }
-})
+initialize(store, router)
 
 const app = new Vue({
   el: '#app',

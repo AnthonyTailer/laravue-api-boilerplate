@@ -1,7 +1,6 @@
 export const login = (credentials) => {
   return new Promise( (res, rej) => {
     const {email, password} = credentials
-    debugger
    axios.post('/api/auth/login', {email, password} )
      .then( (response) => {
        res(response.data)

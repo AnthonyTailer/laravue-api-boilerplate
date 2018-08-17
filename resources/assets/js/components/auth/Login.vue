@@ -35,6 +35,14 @@
             </div>
           </v-card-title>
         </v-card>
+  
+        <v-alert
+          :value="!!authError"
+          type="error"
+        >
+          {{authError}}
+        </v-alert>
+        
       </v-flex>
     </v-layout>
   </v-container>
@@ -51,7 +59,7 @@
       password: '',
       passwordRules: [
         v => !!v || 'Password is required',
-        v => v.length > 6 || 'Name must be less than 6 characters'
+        v => v.length >= 6 || 'Name must be less than 6 characters'
       ],
       email: '',
       emailRules: [
@@ -71,6 +79,11 @@
           .catch(error => {
             this.$store.commit('loginFailed', {error})
           })
+      }
+    },
+    computed: {
+      authError() {
+        return this.$store.getters.authError
       }
     }
   }
