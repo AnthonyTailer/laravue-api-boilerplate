@@ -9,23 +9,80 @@
 ```console
 $ sudo apt remove docker docker-engine docker.io
 ```
-* installing
+* Installing
+* First, update your existing list of packages:
 ```console
-$ sudo apt-get update && sudo apt install docker-ce
+$ sudo apt update
 ```
+
+* Next, install a few prerequisite packages which let apt use packages over HTTPS:
+
 ```console
-$ docker --version
+$ sudo apt install apt-transport-https ca-certificates curl software-properties-common
 ```
+
+* Then add the GPG key for the official Docker repository to your system:
 ```console
-$ docker-compose --version
+$ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
 ```
+
+* Add the Docker repository to APT sources:
+
+```console
+$ sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu bionic stable"
+```
+
+* Next, update the package database with the Docker packages from the newly added repo:
+
+```console
+$ sudo apt update
+```
+
+* Make sure you are about to install from the Docker repo instead of the default Ubuntu repo:
+```console
+$ apt-cache policy docker-ce
+```
+* You'll see output like this, although the version number for Docker may be different:
+
+```console
+Output of apt-cache policy docker-ce
+docker-ce:
+  Installed: (none)
+  Candidate: 18.03.1~ce~3-0~ubuntu
+  Version table:
+     18.03.1~ce~3-0~ubuntu 500
+        500 https://download.docker.com/linux/ubuntu bionic/stable amd64 Packages
+Notice that docker-ce is not installed, but the candidate for installation is from the Docker repository for Ubuntu 18.04 (bionic).
+```
+
+Finally, install Docker:
+```console
+$ sudo apt install docker-ce
+```
+* Docker should now be installed, the daemon started, and the process enabled to start on boot. Check that it's running:
+```console
+$ sudo systemctl status docker
+```
+
 * Manage Docker as a non-root user
+* If you want to avoid typing sudo whenever you run the docker command, add your username to the docker group:
 ```console
 $ sudo groupadd docker
 ```
 ```console
 $ sudo usermod -aG docker $USER
 ```
+
+* To apply the new group membership, log out of the server and back in, or type the following:
+```console
+su - ${USER}
+```
+
+* Confirm that your user is now added to the docker group by typing:
+ ```console
+id -nG
+```
+
 ## Install docker-compose command
 ```console
 $ sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
@@ -51,20 +108,27 @@ $ cd laradock && cp env-example .env
 $ sudo vim .env
 ```
 
-* At the top, change the APP_CODE_PATH_HOST variable to your project path.
+* At the top, change the APP_CODE_PATH_HOST variable to this.
 ```
 APP_CODE_PATH_HOST=../
 ```
 
-## Run your containers
-* inside laradock folder
-```console
-$ docker-compose up -d nginx mysql phpmyadmin redis workspace
+* change the MYSQL_VERSION variable to:
+```
+MYSQL_VERSION=5.7
 ```
 
 * If you get errors on run nginx probably you're running some application on your 80 PORT, on your host PC. You can change nginx's PORT on ``.env`` file too.
 ```
 NGINX_HOST_HTTP_PORT=81
+```
+
+## Running containers
+
+* inside laradock folder
+
+```console
+$ docker-compose up -d nginx mysql phpmyadmin redis workspace
 ```
 
 ## Access the workspace container
@@ -83,40 +147,23 @@ $ docker-compose exec workspace bash
 $ docker-compose run workspace bash
 ```
 ```console
-$ root@workspace:/var/www# git clone https://github.com/AnthonyTailer/laravue-api-boilerplate.git {directory} 
-$ root@workspace:/var/www# cd {directory}
+$ root@workspace:/var/www# git clone https://github.com/AnthonyTailer/laravue-api-boilerplate.git {some-directory} 
+$ root@workspace:/var/www# cd {some-directory}
 $ root@workspace:/var/www# composer install
 $ root@workspace:/var/www# cp .env.example .env
 $ root@workspace:/var/www# php artisan key:generate
+$ root@workspace:/var/www# chown laradock:laradock -R .
 $ root@workspace:/var/www# exit
 
-// out of container bash
+// out of container workspace bash
 
 $ ~/docker/laradock# cd ..
 $ ~/docker# cd {directory}
 $ ~/docker# sudo chmod -R 777 storage bootstrap/cache
 ```
 
-## Install and configure Vue JS on workspace container inside Laravel project
-* inside laradock folder
-```console
-$ docker-compose run workspace bash
-```
-* install Vue JS with Vuex, Vue-Router and Vuetify packages
-```console
-$ root@workspace:/var/www# cd {laravel-directory}
-$ root@workspace:/var/www# yarn
-$ root@workspace:/var/www# exit
-```
+## Configure nginx
 
-## Configure nginx for multiples projects
-
-* Your folder structure should look like this:
-```
-+ laradock
-+ project-1
-+ project-2
-```
 * before you have to destroy the containers
 ```console
 $ docker-compose down 
@@ -177,6 +224,18 @@ $ sudo vim etc/hosts
 * run the containers again on laradock folder
 ```console
 $ docker-compose up -d nginx mysql phpmyadmin redis workspace
+```
+
+## Install and configure Vue JS on workspace container inside Laravel project
+* inside laradock folder
+```console
+$ docker-compose run workspace bash
+```
+* install Vue JS with Vuex, Vue-Router and Vuetify packages
+```console
+$ root@workspace:/var/www# cd {laravel-project-directory}
+$ root@workspace:/var/www# yarn
+$ root@workspace:/var/www# exit
 ```
 
 ## If you can't run artisan migrate
