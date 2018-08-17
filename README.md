@@ -28,7 +28,7 @@ $ sudo usermod -aG docker $USER
 ```
 ## Install docker-compose command
 ```console
-$ # curl -L https://github.com/docker/compose/releases/download/1.8.0/run.sh > /usr/local/bin/docker-compose
+$ sudo curl -L https://github.com/docker/compose/releases/download/1.22.0/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
 ```
 ```console
 $ chmod +x /usr/local/bin/docker-compose
@@ -72,7 +72,7 @@ NGINX_HOST_HTTP_PORT=81
 ```console
 $ docker-compose run workspace bash
 ```
-Ou
+or
 ```console
 $ docker-compose exec workspace bash
 ```
@@ -83,12 +83,14 @@ $ docker-compose exec workspace bash
 $ docker-compose run workspace bash
 ```
 ```console
-$ root@workspace:/var/www# composer create-project laravel/laravel {directory} 
+$ root@workspace:/var/www# git clone https://github.com/AnthonyTailer/laravue-api-boilerplate.git {directory} 
 $ root@workspace:/var/www# cd {directory}
 $ root@workspace:/var/www# composer install
 $ root@workspace:/var/www# cp .env.example .env
 $ root@workspace:/var/www# php artisan key:generate
 $ root@workspace:/var/www# exit
+
+// out of container bash
 
 $ ~/docker/laradock# cd ..
 $ ~/docker# cd {directory}
@@ -103,7 +105,6 @@ $ docker-compose run workspace bash
 * install Vue JS with Vuex, Vue-Router and Vuetify packages
 ```console
 $ root@workspace:/var/www# cd {laravel-directory}
-$ root@workspace:/var/www# yarn add vuex vue-router vuetify
 $ root@workspace:/var/www# yarn
 $ root@workspace:/var/www# exit
 ```
@@ -178,7 +179,7 @@ $ sudo vim etc/hosts
 $ docker-compose up -d nginx mysql phpmyadmin redis workspace
 ```
 
-## If you can't rum artisan migrate
+## If you can't run artisan migrate
 
 edited laradock/.env, set MYSQL_VERSION from latest to 5.7
 

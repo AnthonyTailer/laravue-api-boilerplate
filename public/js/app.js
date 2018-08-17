@@ -35503,11 +35503,48 @@ Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ __webpack_exports__["default"] = ({
   name: 'main-app',
   mounted: function mounted() {
     console.log('Component mounted.');
+  },
+
+  data: function data() {
+    return {
+      drawer: null
+    };
+  },
+  props: {
+    source: String
   }
 });
 
@@ -35523,9 +35560,89 @@ var render = function() {
     "v-app",
     { attrs: { id: "main" } },
     [
-      _c("v-navigation-drawer", { attrs: { app: "" } }),
+      _c(
+        "v-navigation-drawer",
+        {
+          attrs: { app: "", fixed: "" },
+          model: {
+            value: _vm.drawer,
+            callback: function($$v) {
+              _vm.drawer = $$v
+            },
+            expression: "drawer"
+          }
+        },
+        [
+          _c(
+            "v-list",
+            { attrs: { dense: "" } },
+            [
+              _c(
+                "v-list-tile",
+                { on: { click: function($event) {} } },
+                [
+                  _c("v-list-tile-action", [_c("v-icon", [_vm._v("home")])], 1),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-tile-content",
+                    [_c("v-list-tile-title", [_vm._v("Home")])],
+                    1
+                  )
+                ],
+                1
+              ),
+              _vm._v(" "),
+              _c(
+                "v-list-tile",
+                { on: { click: function($event) {} } },
+                [
+                  _c(
+                    "v-list-tile-action",
+                    [_c("v-icon", [_vm._v("contact_mail")])],
+                    1
+                  ),
+                  _vm._v(" "),
+                  _c(
+                    "v-list-tile-content",
+                    [_c("v-list-tile-title", [_vm._v("Contact")])],
+                    1
+                  )
+                ],
+                1
+              )
+            ],
+            1
+          )
+        ],
+        1
+      ),
       _vm._v(" "),
-      _c("v-toolbar", { attrs: { app: "" } }),
+      _c(
+        "v-toolbar",
+        { attrs: { app: "", dark: "", fixed: "" } },
+        [
+          _c("v-toolbar-side-icon", {
+            on: {
+              click: function($event) {
+                $event.stopPropagation()
+                _vm.drawer = !_vm.drawer
+              }
+            }
+          }),
+          _vm._v(" "),
+          _c("v-toolbar-title", [_vm._v("Title")]),
+          _vm._v(" "),
+          _c("v-spacer"),
+          _vm._v(" "),
+          _c(
+            "v-toolbar-items",
+            { staticClass: "hidden-sm-and-down" },
+            [_c("v-btn", { attrs: { flat: "" } }, [_vm._v("Logout")])],
+            1
+          )
+        ],
+        1
+      ),
       _vm._v(" "),
       _c("v-content", { attrs: { id: "content" } }, [_c("router-view")], 1),
       _vm._v(" "),
